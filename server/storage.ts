@@ -6,6 +6,8 @@ import {
   showtimes,
   bookings,
   seats,
+  commissionRates,
+  adminAuditLogs,
   type UpsertUser,
   type User,
   type Cinema,
@@ -25,53 +27,40 @@ import {
   type CinemaWithDetails,
 } from "@shared/schema";
 import { db } from "./db";
+
+// Import necessary functions from drizzle-orm
 import { eq, and, gte, lte, desc, asc, sql } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
-  // User operations (mandatory for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-
-  // Cinema operations
   getCinemas(): Promise<Cinema[]>;
   getCinema(id: number): Promise<CinemaWithDetails | undefined>;
   createCinema(cinema: InsertCinema): Promise<Cinema>;
   updateCinema(id: number, cinema: Partial<InsertCinema>): Promise<Cinema>;
   getCinemasByOwner(ownerId: string): Promise<Cinema[]>;
-
-  // Auditorium operations
   getAuditoriums(cinemaId: number): Promise<Auditorium[]>;
   createAuditorium(auditorium: InsertAuditorium): Promise<Auditorium>;
-
-  // Movie operations
   getMovies(): Promise<Movie[]>;
   getMovie(id: number): Promise<Movie | undefined>;
   createMovie(movie: InsertMovie): Promise<Movie>;
   updateMovie(id: number, movie: Partial<InsertMovie>): Promise<Movie>;
   searchMovies(query: string): Promise<Movie[]>;
-
-  // Showtime operations
   getShowtimes(movieId?: number, cinemaId?: number, date?: string): Promise<ShowtimeWithDetails[]>;
   getShowtime(id: number): Promise<ShowtimeWithDetails | undefined>;
   createShowtime(showtime: InsertShowtime): Promise<Showtime>;
   updateShowtime(id: number, showtime: Partial<InsertShowtime>): Promise<Showtime>;
   deleteShowtime(id: number): Promise<void>;
-
-  // Booking operations
   getBookings(userId?: string): Promise<BookingWithDetails[]>;
   getBooking(id: number): Promise<BookingWithDetails | undefined>;
   createBooking(booking: InsertBooking): Promise<Booking>;
   cancelBooking(id: number): Promise<void>;
-
-  // Seat operations
   getSeats(showtimeId: number): Promise<Seat[]>;
   lockSeats(showtimeId: number, seatNumbers: string[], lockedBy: string): Promise<void>;
   unlockSeats(showtimeId: number, seatNumbers: string[]): Promise<void>;
   bookSeats(showtimeId: number, seatNumbers: string[], bookingId: number): Promise<void>;
   cleanupExpiredLocks(): Promise<void>;
-
-  // Admin operations
   getAllTransactions(): Promise<any[]>;
   getTransactionsByDateRange(startDate: Date, endDate: Date): Promise<any[]>;
   getTransactionsByCinema(cinemaId: number): Promise<any[]>;
@@ -82,7 +71,6 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations (mandatory for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
@@ -103,7 +91,6 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  // Cinema operations
   async getCinemas(): Promise<Cinema[]> {
     return await db.select().from(cinemas).orderBy(asc(cinemas.name));
   }
@@ -145,7 +132,6 @@ export class DatabaseStorage implements IStorage {
       .orderBy(asc(cinemas.name));
   }
 
-  // Auditorium operations
   async getAuditoriums(cinemaId: number): Promise<Auditorium[]> {
     return await db
       .select()
@@ -159,7 +145,6 @@ export class DatabaseStorage implements IStorage {
     return newAuditorium;
   }
 
-  // Movie operations
   async getMovies(): Promise<Movie[]> {
     return await db
       .select()
@@ -200,7 +185,6 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(movies.releaseDate));
   }
 
-  // Showtime operations
   async getShowtimes(movieId?: number, cinemaId?: number, date?: string): Promise<ShowtimeWithDetails[]> {
     let query = db
       .select()
@@ -231,7 +215,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     const results = await query.orderBy(asc(showtimes.startTime));
-    
+
     return results.map(result => ({
       ...result.showtimes,
       movie: result.movies,
@@ -277,7 +261,6 @@ export class DatabaseStorage implements IStorage {
     await db.delete(showtimes).where(eq(showtimes.id, id));
   }
 
-  // Booking operations
   async getBookings(userId?: string): Promise<BookingWithDetails[]> {
     let query = db
       .select()
@@ -292,7 +275,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     const results = await query.orderBy(desc(bookings.createdAt));
-    
+
     return results.map(result => ({
       ...result.bookings,
       showtime: {
@@ -339,7 +322,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bookings.id, id));
   }
 
-  // Seat operations
   async getSeats(showtimeId: number): Promise<Seat[]> {
     return await db
       .select()
@@ -350,7 +332,7 @@ export class DatabaseStorage implements IStorage {
 
   async lockSeats(showtimeId: number, seatNumbers: string[], lockedBy: string): Promise<void> {
     const lockExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-    
+
     for (const seatNumber of seatNumbers) {
       await db
         .update(seats)
@@ -428,7 +410,6 @@ export class DatabaseStorage implements IStorage {
       );
   }
 
-  // Admin operations
   async getAllTransactions(): Promise<any[]> {
     const results = await db
       .select()
@@ -439,7 +420,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bookings.status, "confirmed"))
       .orderBy(desc(bookings.createdAt));
 
-    return results.map(result => ({
+    return results.map((result) => ({
       bookingId: result.bookings.id,
       bookingReference: result.bookings.bookingReference,
       amount: result.bookings.totalAmount,
@@ -467,7 +448,7 @@ export class DatabaseStorage implements IStorage {
       )
       .orderBy(desc(bookings.createdAt));
 
-    return results.map(result => ({
+    return results.map((result) => ({
       bookingId: result.bookings.id,
       bookingReference: result.bookings.bookingReference,
       amount: result.bookings.totalAmount,
@@ -494,7 +475,7 @@ export class DatabaseStorage implements IStorage {
       )
       .orderBy(desc(bookings.createdAt));
 
-    return results.map(result => ({
+    return results.map((result) => ({
       bookingId: result.bookings.id,
       bookingReference: result.bookings.bookingReference,
       amount: result.bookings.totalAmount,
@@ -507,30 +488,36 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateCommissionRate(cinemaId: number, rate: number): Promise<void> {
-    // This would be implemented with a commission table
-    // For now, we'll store it in cinema metadata
     await db
-      .update(cinemas)
-      .set({ 
-        updatedAt: new Date(),
-        // We'd need a commission_rate column in the schema
-      })
-      .where(eq(cinemas.id, cinemaId));
+      .insert(commissionRates)
+      .values({ cinemaId, rate, effectiveDate: new Date() })
+      .onConflictDoUpdate({
+        target: commissionRates.cinemaId,
+        set: { rate, effectiveDate: new Date() },
+      });
   }
 
   async getCommissionRate(cinemaId: number): Promise<number> {
-    // Default commission rate
-    return 0.10; // 10%
+    const [commission] = await db
+      .select({ rate: commissionRates.rate })
+      .from(commissionRates)
+      .where(eq(commissionRates.cinemaId, cinemaId))
+      .limit(1);
+    return commission?.rate ?? 0.10; // Default 10% if not found
   }
 
   async logAdminAction(adminId: string, action: string, details: any): Promise<void> {
-    // This would be implemented with an audit log table
-    console.log(`Admin ${adminId} performed action: ${action}`, details);
+    await db.insert(adminAuditLogs).values({
+      adminId,
+      action,
+      details: JSON.stringify(details),
+      ipAddress: "unknown", // Update if you have access to request IP
+      userAgent: "unknown", // Update if you have access to user agent
+    });
   }
 
   async getAdminAuditLogs(): Promise<any[]> {
-    // This would return audit logs from a dedicated table
-    return [];
+    return await db.select().from(adminAuditLogs).orderBy(desc(adminAuditLogs.createdAt));
   }
 }
 
