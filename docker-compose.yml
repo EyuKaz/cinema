@@ -1,38 +1,64 @@
-version: "3.8"
+version: "3.9"
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  # thin shell container for Codespaces
+  dev:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
     volumes:
-      - .:/workspace:cached
+      - ..:/workspace:cached
     command: sleep infinity
-    ports:
-      - "5000:5000"
-    depends_on:
-      - postgres
-      - redis
+
+  # --- Microservices (match the repo folder names) --------------------------
+  gateway:
+    build: ../server-gateway
+    ports: ["5000:5000"]
     environment:
-      - DATABASE_URL=postgres://cinemaos:password@localhost:5432/cinemaos
-      - REDIS_URL=redis://localhost:6379
-      - NODE_ENV=development
-      - PORT=5000
-  postgres:
-    image: postgres:latest
+      - REDIS_URL=redis://redis:6379
+    depends_on: [redis]
+
+  catalog:
+    build: ../server-catalog
+    ports: ["5001:5001"]
+    environment:
+      - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
+      - REDIS_URL=redis://redis:6379
+    depends_on: [db, redis]
+
+  payments:
+    build: ../server-payments
+    ports: ["5002:5002"]
+    environment:
+      - CHAPA_SECRET_KEY=${CHAPA_SECRET_KEY}
+      - REDIS_URL=redis://redis:6379
+    depends_on: [redis]
+
+  recommendations:
+    build: ../server-recommendations
+    ports: ["5003:5003"]
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on: [redis]
+
+  client:
+    build: ../client
+    ports: ["5173:5173"]
+    volumes:
+      - ../client:/app
+      - /app/node_modules
+
+  # --- Infra ----------------------------------------------------------------
+  db:
+    image: postgres:15
+    restart: unless-stopped
     environment:
       POSTGRES_USER: cinemaos
       POSTGRES_PASSWORD: password
       POSTGRES_DB: cinemaos
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+    volumes: [postgres-data:/var/lib/postgresql/data]
+
   redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
 volumes:
-  postgres_data:
-  redis_data:
+  postgres-data:
