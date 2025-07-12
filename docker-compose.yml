@@ -1,7 +1,9 @@
 version: "3.9"
+
 services:
   gateway:
-    build: ./apps/gateway
+    build:
+      context: ./apps/gateway
     ports: ["5000:5000"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
@@ -9,57 +11,66 @@ services:
     depends_on: [db, redis]
 
   auth:
-    build: ./services/auth
+    build:
+      context: ./services/auth
     ports: ["5001:5001"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
       - REDIS_URL=redis://redis:6379
 
   booking:
-    build: ./services/booking
+    build:
+      context: ./services/booking
     ports: ["5002:5002"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
       - REDIS_URL=redis://redis:6379
 
   cinema:
-    build: ./services/cinema
+    build:
+      context: ./services/cinema
     ports: ["5003:5003"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
 
   movie:
-    build: ./services/movie
+    build:
+      context: ./services/movie
     ports: ["5004:5004"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
 
   payment:
-    build: ./services/payment
+    build:
+      context: ./services/payment
     ports: ["5005:5005"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
       - CHAPA_SECRET_KEY=${CHAPA_SECRET_KEY}
 
   showtime:
-    build: ./services/showtime
+    build:
+      context: ./services/showtime
     ports: ["5006:5006"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
       - REDIS_URL=redis://redis:6379
 
   ticket:
-    build: ./services/ticket
+    build:
+      context: ./services/ticket
     ports: ["5007:5007"]
     environment:
       - DATABASE_URL=postgresql://cinemaos:password@db:5432/cinemaos
 
   frontend:
-    build: ./apps/frontend
+    build:
+      context: ./apps/frontend
     ports: ["3000:3000"]
 
   admin-dashboard:
-    build: ./apps/admin-dashboard
+    build:
+      context: ./apps/admin-dashboard
     ports: ["3001:3001"]
 
   db:
@@ -69,7 +80,8 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: cinemaos
     ports: ["5432:5432"]
-    volumes: [postgres-data:/var/lib/postgresql/data]
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine

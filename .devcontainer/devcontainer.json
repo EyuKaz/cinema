@@ -1,9 +1,8 @@
 {
-  "name": "CinemaOS Microservices",
-  "dockerComposeFile": ["../docker-compose.yml"],
-  "service": "gateway",
+  "name": "CinemaOS Dev",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "workspaceFolder": "/workspaces/cinema",
   "forwardPorts": [3000, 3001, 5000, 5001, 5002, 5003, 5004, 5005, 5006, 5007, 5432, 6379],
-  "postCreateCommand": "echo '🎬 CinemaOS ready. Run: docker compose up'",
+  "postCreateCommand": "echo '🎬 CinemaOS ready. Now run: docker compose up --build'",
   "shutdownAction": "none"
 }
