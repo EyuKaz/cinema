@@ -1,24 +1,18 @@
 #!/bin/bash
 
-# Update and install essentials
 sudo apt-get update
-sudo apt-get install -y postgresql postgresql-contrib redis nodejs npm
+sudo apt-get install -y curl postgresql postgresql-contrib redis
 
-# Start Postgres and Redis services
+# Start services
 sudo service postgresql start
 sudo service redis-server start
 
-# Install Node v20 via NodeSource (more reliable than apt's old Node)
+# Install Node 20
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
-# Show versions
-echo "Node version: $(node -v)"
-echo "Postgres version: $(psql --version)"
-echo "Redis version: $(redis-server --version)"
-
-# Set up Postgres user and database
+# Setup DB user and database
 sudo -u postgres psql -c "CREATE USER cinemaos WITH PASSWORD 'password';"
 sudo -u postgres psql -c "CREATE DATABASE cinemaos OWNER cinemaos;"
 
-echo "🎬 CinemaOS dev environment ready — open terminal tabs and run your services via npm/yarn!"
+echo "Setup complete: node $(node -v), postgres $(psql --version), redis $(redis-server --version)"
