@@ -1,22 +1,19 @@
 {
-  "name": "CinemaOS",
+  "name": "CinemaOS – Microservices",
   "dockerComposeFile": "docker-compose.yml",
-  "service": "app",
+  "service": "dev",
   "workspaceFolder": "/workspace",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode",
-        "framer.framer-motion",
-        "ms-vscode.vscode-typescript-next"
-      ]
-    }
+  "forwardPorts": [5000, 5001, 5002, 5003, 5173, 5432, 6379],
+  "portsAttributes": {
+    "5000": { "label": "api-gateway" },
+    "5001": { "label": "catalog" },
+    "5002": { "label": "payments" },
+    "5003": { "label": "recommendations" },
+    "5173": { "label": "react-client" },
+    "5432": { "label": "postgres" },
+    "6379": { "label": "redis" }
   },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-  },
-  "forwardPorts": [5000, 5432, 6379]
+  "postCreateCommand": "echo 'All services boot via compose; open Ports tab in Codespaces.'",
+  "shutdownAction": "none",
+  "remoteUser": "root"
 }
