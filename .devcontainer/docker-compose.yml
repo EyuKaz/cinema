@@ -7,7 +7,7 @@ services:
       - ..:/workspace:cached
     command: sleep infinity
 
-  # --- Microservices (match the repo folder names) --------------------------
+  # --- Microservices ---------------------------------------------------------
   gateway:
     build: ../server-gateway
     ports: ["5000:5000"]
