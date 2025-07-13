@@ -1,0 +1,21 @@
+{
+  "name": "cinemaos-monorepo",
+  "private": true,
+  "scripts": {
+    "start:gateway": "cd apps/gateway && npm run dev",
+    "start:admin-dashboard": "cd apps/admin-dashboard && npm run dev",
+    "start:frontend": "cd apps/frontend && npm run dev",
+    "start:auth": "cd services/auth && npm run dev",
+    "start:booking": "cd services/booking && npm run dev",
+    "start:cinema": "cd services/cinema && npm run dev",
+    "start:movie": "cd services/movie && npm run dev",
+    "start:payment": "cd services/payment && npm run dev",
+    "start:showtime": "cd services/showtime && npm run dev",
+    "start:ticket": "cd services/ticket && npm run dev",
+
+    "start:all": "concurrently \"npm run start:gateway\" \"npm run start:admin-dashboard\" \"npm run start:frontend\" \"npm run start:auth\" \"npm run start:booking\" \"npm run start:cinema\" \"npm run start:movie\" \"npm run start:payment\" \"npm run start:showtime\" \"npm run start:ticket\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
