@@ -1,6 +1,6 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { IncomingHttpHeaders } from "http";
-import { auth } from "./index";
+import { auth } from "./auth";
 import { createServer, type Server } from "http";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
