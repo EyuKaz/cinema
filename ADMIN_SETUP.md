@@ -157,13 +157,6 @@ WHERE id = 'USER_ID_TO_DEMOTE';
 - **Server Running**: The cinema application server must be active
 - **Valid User Account**: The user must exist in the system before role assignment
 
-## Support
-
-If you encounter issues with admin setup:
-1. Check the server logs for error messages
-2. Verify database connectivity
-3. Ensure all environment variables are properly configured
-4. Contact the development team if problems persist
 
 ---
 
