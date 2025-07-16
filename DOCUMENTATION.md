@@ -60,7 +60,6 @@ C Cinema is a comprehensive full-stack cinema website that provides a complete m
 ├── 📁 server/                   # Backend Express application
 │   ├── db.ts                    # Database connection setup
 │   ├── index.ts                 # Server entry point
-│   ├── replitAuth.ts            # Authentication middleware
 │   ├── routes.ts                # API route definitions
 │   ├── storage.ts               # Database operations
 │   └── vite.ts                  # Development server setup
@@ -155,7 +154,7 @@ C Cinema is a comprehensive full-stack cinema website that provides a complete m
 ### Users Table
 ```sql
 users (
-  id VARCHAR PRIMARY KEY,        -- Replit user ID
+  id VARCHAR PRIMARY KEY,        -- user ID
   email VARCHAR UNIQUE,          -- User email address
   first_name VARCHAR,            -- User's first name
   last_name VARCHAR,             -- User's last name
@@ -256,7 +255,7 @@ sessions (
 ## 👨‍💻 Admin User Workflow
 
 ### 1. Admin Access
-- Admins log in using the same Replit authentication
+- Admins log in using the same authentication
 - System checks user role in database
 - Admin users gain access to `/admin` route
 - Admin-only API endpoints are protected by middleware
@@ -299,9 +298,8 @@ sessions (
 ## 🙋‍♂️ Regular User Workflow
 
 ### 1. Account Creation & Authentication
-- Users sign in via Replit authentication
+- Users sign in via authentication
 - Account automatically created on first login
-- Profile information populated from Replit
 - Session management handles authentication state
 
 ### 2. Movie Discovery
@@ -338,7 +336,6 @@ sessions (
 ### Prerequisites
 - Node.js (v18 or higher)
 - PostgreSQL database
-- Replit account for authentication
 
 ### Local Development Setup
 
@@ -358,8 +355,6 @@ Create a `.env` file with required variables:
 ```env
 DATABASE_URL=postgresql://username:password@localhost:5432/cinema_db
 SESSION_SECRET=your-super-secret-session-key
-REPL_ID=your-replit-app-id
-ISSUER_URL=https://replit.com/oidc
 ```
 
 4. **Database Setup**
@@ -378,36 +373,17 @@ npm run dev
 
 The application will be available at `http://localhost:5000`
 
-### Replit Deployment
 
-1. **Import Project**
-- Import repository into Replit
-- Dependencies auto-install
-
-2. **Configure Secrets**
-- Add environment variables in Replit Secrets
-- DATABASE_URL (auto-provided if PostgreSQL enabled)
-- SESSION_SECRET (generate secure random string)
 
 3. **Database Setup**
 ```bash
 npm run db:push
 ```
 
-4. **Run Application**
-- Click "Run" in Replit
-- Application automatically deploys
 
 ---
 
 ## 🚀 Deployment Instructions
-
-### Replit Deployment (Recommended)
-1. Fork or import project to Replit
-2. Enable PostgreSQL database
-3. Configure environment secrets
-4. Run `npm run db:push`
-5. Click "Run" to deploy
 
 ### Vercel Frontend + Render Backend
 
@@ -434,8 +410,6 @@ DATABASE_URL=<postgresql-connection-string>
 
 # Authentication
 SESSION_SECRET=<64-character-random-string>
-REPL_ID=<your-replit-app-identifier>
-ISSUER_URL=https://replit.com/oidc
 
 # Optional
 NODE_ENV=production
@@ -455,8 +429,6 @@ openssl rand -hex 32
 |----------|-------------|----------|---------|
 | `DATABASE_URL` | PostgreSQL connection string | Yes | None |
 | `SESSION_SECRET` | Session encryption key | Yes | None |
-| `REPL_ID` | Replit application identifier | Yes | None |
-| `ISSUER_URL` | OpenID Connect issuer URL | No | `https://replit.com/oidc` |
 | `NODE_ENV` | Runtime environment | No | `development` |
 | `PORT` | Server port number | No | `5000` |
 

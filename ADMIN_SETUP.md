@@ -22,7 +22,7 @@ This is the most straightforward method for initial admin setup.
 
 #### Step 1: Log in as a Regular User
 1. Visit your cinema website
-2. Click "Sign In" and authenticate using your Replit account
+2. Click "Sign In" and authenticate using your social account
 3. Note your user ID from the URL or browser developer tools
 
 #### Step 2: Update User Role via Database
