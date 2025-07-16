@@ -11,7 +11,7 @@ export default function Landing() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Film className="h-8 w-8 text-cinepolis-red mr-2" />
-              <h1 className="text-2xl font-bold text-cinepolis-red">Cinépolis</h1>
+              <h1 className="text-2xl font-bold text-cinepolis-red">e2 cinema Experience</h1>
             </div>
             <Button 
               onClick={() => window.location.href = "/api/login"}
@@ -57,7 +57,7 @@ export default function Landing() {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h3 className="text-3xl font-bold text-white text-center mb-12">
-            Why Choose Cinépolis?
+            Why Choose e2 cinema Experience?
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="bg-cinema-charcoal border-gray-800">
@@ -100,7 +100,7 @@ export default function Landing() {
             Ready to Experience Premium Cinema?
           </h3>
           <p className="text-gray-300 mb-8 text-lg">
-            Join thousands of movie lovers who choose Cinépolis for their entertainment needs.
+            Join thousands of movie lovers who choose e2 cinema Experience for their entertainment needs.
           </p>
           <Button 
             onClick={() => window.location.href = "/api/login"}
@@ -115,7 +115,7 @@ export default function Landing() {
       <footer className="bg-cinema-charcoal border-t border-gray-800 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-400">
-            &copy; 2025 Cinépolis USA. All rights reserved.
+            &copy; 2025 e2 cinema Experience. All rights reserved.
           </p>
         </div>
       </footer>

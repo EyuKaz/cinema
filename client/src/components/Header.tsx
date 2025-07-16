@@ -38,7 +38,7 @@ export default function Header() {
             <div className="flex-shrink-0">
               <a href="/" className="flex items-center">
                 <Film className="h-8 w-8 text-cinepolis-red mr-2" />
-                <h1 className="text-2xl font-bold text-cinepolis-red">Cinépolis</h1>
+                <h1 className="text-2xl font-bold text-cinepolis-red">C</h1>
               </a>
             </div>
             
