@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
-import { Auth } from "better-auth";
+import { betterAuth } from "better-auth";
 import {
   insertMovieSchema,
   insertTheaterSchema,
@@ -18,7 +18,7 @@ import {
 } from "@shared/schema";
 
 // Initialize auth instance
-const auth = new Auth();
+const auth = new auth();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes are handled by Better Auth middleware
