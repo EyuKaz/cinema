@@ -4,11 +4,9 @@ import {
   varchar,
   timestamp,
   jsonb,
-  index,
   serial,
   integer,
   decimal,
-  boolean,
   date,
   time,
 } from "drizzle-orm/pg-core";
@@ -16,42 +14,50 @@ import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Session storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)],
-);
-
-// User storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+// Users table (compatible with Better Auth)
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
-  role: varchar("role").default("user").notNull(), // user, admin
+  id: varchar("id", { length: 255 }).primaryKey(),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  firstName: varchar("first_name", { length: 100 }),
+  lastName: varchar("last_name", { length: 100 }),
+  profileImageUrl: varchar("profile_image_url", { length: 255 }),
+  role: varchar("role", { length: 20 }).default("user").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Sessions table (Better Auth)
+export const sessions = pgTable("sessions", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Accounts table (for social providers)
+export const accounts = pgTable("accounts", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  provider: varchar("provider", { length: 50 }).notNull(),
+  providerAccountId: varchar("provider_account_id", { length: 255 }).notNull(),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Other tables (unchanged)
 export const movies = pgTable("movies", {
   id: serial("id").primaryKey(),
   title: varchar("title").notNull(),
   description: text("description"),
   genre: varchar("genre").notNull(),
-  duration: integer("duration").notNull(), // in minutes
-  rating: varchar("rating").notNull(), // PG, PG-13, R, etc.
+  duration: integer("duration").notNull(),
+  rating: varchar("rating").notNull(),
   posterUrl: varchar("poster_url"),
   trailerUrl: varchar("trailer_url"),
   cast: text("cast").array(),
-  status: varchar("status").default("Now Playing").notNull(), // Now Playing, Coming Soon
+  status: varchar("status").default("Now Playing").notNull(),
   releaseDate: date("release_date"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -77,7 +83,7 @@ export const showtimes = pgTable("showtimes", {
   availableSeats: integer("available_seats").default(100).notNull(),
   totalSeats: integer("total_seats").default(100).notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
-  seatMap: jsonb("seat_map"), // Store seat layout and availability
+  seatMap: jsonb("seat_map"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -88,7 +94,7 @@ export const bookings = pgTable("bookings", {
   showtimeId: integer("showtime_id").notNull().references(() => showtimes.id),
   seatNumbers: text("seat_numbers").array(),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
-  status: varchar("status").default("confirmed").notNull(), // confirmed, canceled
+  status: varchar("status").default("confirmed").notNull(),
   bookedAt: timestamp("booked_at").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -100,7 +106,7 @@ export const contactMessages = pgTable("contact_messages", {
   email: varchar("email").notNull(),
   subject: varchar("subject").notNull(),
   message: text("message").notNull(),
-  status: varchar("status").default("unread").notNull(), // unread, read, responded
+  status: varchar("status").default("unread").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
